@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">PopularMovies</string>
     <string name="action_settings">Settings</string>
+    <string name="popular_movies">Popular Movies</string>
+    <string name="loading_toast">Loading...</string>
+    <string name="title_activity_movie_detail">MovieDetailActivity</string>
+
+    <string name="plot">Plot</string>
+    <string name="know_more">Know More!</string>
 </resources>

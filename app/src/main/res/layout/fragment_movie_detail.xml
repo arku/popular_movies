@@ -1,0 +1,87 @@
+<ScrollView android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.arun.popularmovies.MovieDetailActivityFragment"
+    tools:showIn="@layout/activity_movie_detail">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="@color/primaryLight"
+        android:scaleType="centerCrop"
+        android:id="@+id/poster_image_view"/>
+
+    <TextView
+        style="@style/textStyle"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/primaryText"
+        android:id="@+id/movie_name_text_view"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp">
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingRight="5dp"
+            android:id="@+id/movie_release_date_text_view"
+            />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:background="@color/primaryDark"
+            />
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingLeft="5dp"
+            android:id="@+id/movie_votes_text_view"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/plot"
+        android:textAllCaps="true"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/primaryText"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:paddingLeft="20dp"
+        android:textSize="15sp"
+        android:id="@+id/movie_plot_text_view"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/white"
+        android:background="@color/accent"
+        android:text="@string/know_more"
+        android:id="@+id/know_more_button"
+
+        />
+</LinearLayout>
+</ScrollView>
