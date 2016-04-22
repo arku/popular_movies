@@ -1,5 +1,6 @@
 package com.example.arun.popularmovies;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -47,8 +47,8 @@ public class MovieDetailActivityFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         Movie movie = intent.getExtras().getParcelable("movie");
 
-        assert movie != null;
-        movieNameTextView.setText(movie.getTitle());
+        final String movieName = movie.getTitle();
+        movieNameTextView.setText(movieName);
 
         Picasso.with(getActivity())
                 .load(movie.getBackdropPath())
@@ -62,7 +62,15 @@ public class MovieDetailActivityFragment extends Fragment {
         knowMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Opening new tab", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Opening new tab", Toast.LENGTH_SHORT).show();
+
+                //Implicit intent to open a browser with search text as the movieName
+
+                 String googleUrl = "http://www.google.com/#q=";
+                Intent implicitIntent = new Intent()
+                        .setAction(Intent.ACTION_WEB_SEARCH)
+                        .putExtra(SearchManager.QUERY, movieName);
+                startActivity(implicitIntent);
             }
         });
 

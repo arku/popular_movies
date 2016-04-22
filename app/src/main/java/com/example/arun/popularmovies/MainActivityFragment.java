@@ -1,9 +1,12 @@
 package com.example.arun.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -79,6 +83,12 @@ public class MainActivityFragment extends Fragment {
         new FetchMovieDataTask().execute(userPref);
 
 
+        //Find the imageView in the gridview to animate it using sharedElement Transitions
+        LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View viewToTransition = layoutInflater.inflate(R.layout.movie_item,null);
+        final ImageView imageViewToTransition = (ImageView)viewToTransition.findViewById(R.id.movie_poster_image_view);
+
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -87,7 +97,9 @@ public class MainActivityFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
 
                 intent.putExtra("movie", movie);
-                startActivity(intent);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(getActivity(), (View)imageViewToTransition, getString(R.string.transition_string));
+                ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
 
             }
         });

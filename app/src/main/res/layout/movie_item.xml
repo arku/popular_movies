@@ -5,6 +5,7 @@
     android:scaleType="centerCrop"
     android:id="@+id/movie_poster_image_view"
     android:adjustViewBounds="true"
+    android:transitionName="@string/transition_string"
     >
 
 </ImageView>
