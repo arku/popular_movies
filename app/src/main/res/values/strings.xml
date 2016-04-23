@@ -8,4 +8,7 @@
     <string name="plot">Plot</string>
     <string name="know_more">Know More!</string>
     <string name="transition_string">poster_image</string>
+    <string name="popular">popular</string>
+    <string name="action_info">Info</string>
+    <string name="info">Popular Movies V1.0\nData collected from TMDB API.\nhttps://www.themoviedb.org/en\nCode Written and Developed By Arun Kumar</string>
 </resources>
