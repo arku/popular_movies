@@ -280,7 +280,8 @@ public class MainActivityFragment extends Fragment {
 
             String baseUrl = "http://api.themoviedb.org/3/movie/";
             String API_KEY = "api_key";
-            String TMDB_API_KEY = "e9a4689313dd5ce870efaeef49d348b8";
+            /** Drop in your TMDB API Key the next line**/
+            String TMDB_API_KEY = "";
             String TYPE = params[0];
 
             baseUrl = baseUrl + TYPE;
