@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="popular_movies">Popular Movies</string>
     <string name="loading_toast">Loading...</string>
-    <string name="title_activity_movie_detail">MovieDetailActivity</string>
+    <string name="title_activity_movie_detail">Details</string>
 
     <string name="plot">Plot</string>
     <string name="know_more">Know More!</string>
@@ -11,4 +11,7 @@
     <string name="popular">popular</string>
     <string name="action_info">Info</string>
     <string name="info">Popular Movies V1.0\nData collected from TMDB API.\nhttps://www.themoviedb.org/en\nCode Written and Developed By Arun Kumar</string>
+
+    <string name="parcelable_bundle_key">movies_array</string>
+    <string name="movie">&#160;movie</string>
 </resources>

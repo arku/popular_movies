@@ -2,12 +2,17 @@ package com.example.arun.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,12 +42,18 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-
-
-    public MovieAdapter imageAdapter;
-    public ArrayList<Movie> moviesArrayList;
+    private MovieAdapter imageAdapter;
+    private ArrayList<Movie> moviesArrayList;
+    private SharedPreferences sharedPreferences;
+    private Spinner spinner;
+    private int count = 0;
 
     public MainActivityFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -50,37 +61,61 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        String userPref = "popular";
+
+        //Find if the user has network connection, show an alert if he has no internet connection
+        ConnectivityManager connectivityManager = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo == null || !networkInfo.isConnected()){
+            //Toast.makeText(getActivity(), "No connection.", Toast.LENGTH_LONG).show();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("No internet connection. Try after connecting to the internet");
+            builder.show();
+            return rootView;
+        }
+
+        //Get a handle to sharedPreferences
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        ArrayList<Movie> movies = new ArrayList<>();
 
         //Find the spinner and set adapter
-        Spinner spinner = (Spinner)rootView.findViewById(R.id.spinner);
+        spinner = (Spinner)rootView.findViewById(R.id.spinner);
 
+
+        //Populate the adapter
         List<String> userChoices = new ArrayList<>(Arrays.asList(new String[]{"Popular", "Top Rated"}));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.support_simple_spinner_dropdown_item,userChoices);
         spinner.setAdapter(arrayAdapter);
 
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String userPref = getSnakeCase((String)adapterView.getItemAtPosition(i));
-                Log.d("Spinner", userPref);
-                new FetchMovieDataTask().execute(userPref);
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-
-
+        //Attaching the adapter to gridview
         GridView gridView = (GridView)rootView.findViewById(R.id.movies_grid);
-        ArrayList<Movie> movies = new ArrayList<>();
-        imageAdapter = new MovieAdapter(getActivity(), movies);
+        imageAdapter = new MovieAdapter(getActivity(), new ArrayList<Movie>());
         gridView.setAdapter(imageAdapter);
 
+        //Restore the seleced item in the spinner
+        int position = sharedPreferences.getInt("item_selected_pos", 0);
+        spinner.setSelection(position, true);
 
-        new FetchMovieDataTask().execute(userPref);
+        //Restore data using the bundle in case of configuration changes
+        if(savedInstanceState != null){
+            Log.i("saveInstance", "restoring instance");
+            movies = savedInstanceState.getParcelableArrayList(getString(R.string.parcelable_bundle_key));
+            imageAdapter.setData(movies);
+            imageAdapter.notifyDataSetChanged();
+            Toast.makeText(getActivity(),"Adapter is redrawing", Toast.LENGTH_SHORT).show();
+            Log.i("saveInstance", "adapter set");
+        }
+
+        //Make the api call
+        else{
+            // String userPref = sharedPreferences.getString("user_pref", getString(R.string.popular));
+            String userPref = sharedPreferences.getString("user_pref", getString(R.string.popular));
+            Log.i("else", "Making the API call");
+            new FetchMovieDataTask().execute(userPref);
+        }
 
 
         //Find the imageView in the gridview to animate it using sharedElement Transitions
@@ -89,6 +124,7 @@ public class MainActivityFragment extends Fragment {
         final ImageView imageViewToTransition = (ImageView)viewToTransition.findViewById(R.id.movie_poster_image_view);
 
 
+        //Set an item click listener to the gridview
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -97,15 +133,61 @@ public class MainActivityFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
 
                 intent.putExtra("movie", movie);
+
+                // Establish a sharedElement Transition
                 ActivityOptionsCompat options = ActivityOptionsCompat.
                         makeSceneTransitionAnimation(getActivity(), (View)imageViewToTransition, getString(R.string.transition_string));
                 ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
 
             }
         });
+
+        //Setup an item selected listener to change the list of movies based on the user's choice
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                //Get the user choice and store it in SharedPreferences
+                String userPref = getSnakeCase((String) adapterView.getItemAtPosition(i));
+
+                Log.d("onItemSelected", "Listener triggered, calling API");
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("user_pref", userPref);
+                editor.putInt("item_selected_pos", i);
+                editor.apply();
+
+                //Get the user's preference
+                userPref = sharedPreferences.getString("user_pref", getString(R.string.popular));
+                new FetchMovieDataTask().execute(userPref);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(getString(R.string.parcelable_bundle_key), moviesArrayList);
+        Log.i("OnSaveInstancestate", "saved");
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    /**
+     *
+     * @param string
+     * @returns the snakecased version of the string
+     */
     public String getSnakeCase(String string){
 
         String[] parts = string.toLowerCase().split(" ");
@@ -115,6 +197,8 @@ public class MainActivityFragment extends Fragment {
         }
         return snakeCaseString.substring(0, snakeCaseString.length()-1);
     }
+
+
 
     //Inner class to fetch data from tmdb api
 
@@ -208,7 +292,7 @@ public class MainActivityFragment extends Fragment {
                     .appendQueryParameter(API_KEY, TMDB_API_KEY)
                     .build();
 
-            Log.d(LOG_TAG, uri.toString());
+            //Log.d(LOG_TAG, uri.toString());
             URL queryUrl = null;
             String response = "";
             HttpURLConnection httpUrlConnection = null;

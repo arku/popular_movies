@@ -28,6 +28,7 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
 
     public void setData(ArrayList<Movie> movies){
         mMovies = movies;
+        this.notifyDataSetChanged();
     }
 
     @Override

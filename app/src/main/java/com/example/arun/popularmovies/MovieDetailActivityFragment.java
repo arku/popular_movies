@@ -69,7 +69,7 @@ public class MovieDetailActivityFragment extends Fragment {
                  String googleUrl = "http://www.google.com/#q=";
                 Intent implicitIntent = new Intent()
                         .setAction(Intent.ACTION_WEB_SEARCH)
-                        .putExtra(SearchManager.QUERY, movieName);
+                        .putExtra(SearchManager.QUERY, movieName + getString(R.string.movie));
                 startActivity(implicitIntent);
             }
         });
